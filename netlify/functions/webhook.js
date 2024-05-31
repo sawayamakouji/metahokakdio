@@ -44,12 +44,12 @@ exports.handler = async function(event, context) {
         const eventData = JSON.parse(event.body);
         console.log("Parsed event data:", eventData);
 
-        if (eventData.type === 'participant_joined') {
-            participants.push(eventData.participant);
-            messages.push(`${eventData.participant.name}さんが入室しました`);
-        } else if (eventData.type === 'participant_left') {
-            participants = participants.filter(p => p.id !== eventData.participant.id);
-            messages.push(`${eventData.participant.name}さんが退室しました`);
+        if (eventData.when === 'join') {
+            participants.push({ id: eventData.id, name: eventData.name });
+            messages.push(`${eventData.name}さんが入室しました`);
+        } else if (eventData.when === 'leave') {
+            participants = participants.filter(p => p.id !== eventData.id);
+            messages.push(`${eventData.name}さんが退室しました`);
         }
 
         saveParticipants(participants);
