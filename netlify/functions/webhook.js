@@ -1,4 +1,23 @@
-let participants = [];
+const fs = require('fs');
+const filePath = '/tmp/participants.json';
+
+function loadParticipants() {
+    try {
+        const data = fs.readFileSync(filePath, 'utf8');
+        return JSON.parse(data);
+    } catch (error) {
+        console.log("Error loading participants:", error);
+        return [];
+    }
+}
+
+function saveParticipants(participants) {
+    try {
+        fs.writeFileSync(filePath, JSON.stringify(participants), 'utf8');
+    } catch (error) {
+        console.error("Error saving participants:", error);
+    }
+}
 
 exports.handler = async function(event, context) {
     console.log("Received event:", event.body);
@@ -10,6 +29,7 @@ exports.handler = async function(event, context) {
         };
     }
 
+    let participants = loadParticipants();
     try {
         const eventData = JSON.parse(event.body);
         console.log("Parsed event data:", eventData);
@@ -20,6 +40,7 @@ exports.handler = async function(event, context) {
             participants = participants.filter(p => p.id !== eventData.participant.id);
         }
 
+        saveParticipants(participants);
         console.log("Updated participants list:", participants);
 
         return {
