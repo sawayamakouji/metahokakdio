@@ -8,48 +8,29 @@
 <body>
     <h1>Current Participants</h1>
     <ul id="participants"></ul>
-    <h2>Messages</h2>
-    <ul id="messages"></ul>
 
     <script>
         async function fetchParticipants() {
             try {
-                console.log('Fetching participants...');
                 const response = await fetch('/.netlify/functions/getParticipants');
-                console.log('Response status:', response.status);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                const data = await response.json();
-                console.log('Data received:', data);
-
-                if (!Array.isArray(data.participants)) {
-                    throw new Error('Participants data is not an array');
-                }
-
+                const participants = await response.json();
                 const participantsList = document.getElementById('participants');
                 participantsList.innerHTML = '';
 
-                data.participants.forEach(participant => {
+                participants.forEach(participant => {
                     const listItem = document.createElement('li');
                     listItem.textContent = participant.name;
                     participantsList.appendChild(listItem);
-                });
-
-                const messagesList = document.getElementById('messages');
-                messagesList.innerHTML = '';
-
-                data.messages.forEach(message => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = message;
-                    messagesList.appendChild(listItem);
                 });
             } catch (error) {
                 console.error('Error fetching participants:', error);
             }
         }
 
-        setInterval(fetchParticipants, 5000); // Refresh the list every 5 seconds
+        setInterval(fetchParticipants, 5000);
     </script>
 </body>
 </html>
