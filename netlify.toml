@@ -1,0 +1,8 @@
+[build]
+  functions = "netlify/functions"
+  publish = "public"
+
+[[redirects]]
+  from = "/participants"
+  to = "/.netlify/functions/getParticipants"
+  status = 200

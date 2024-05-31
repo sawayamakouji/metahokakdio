@@ -1,0 +1,14 @@
+{
+  "name": "metalife-webhook",
+  "version": "1.0.0",
+  "description": "MetaLife webhook receiver and participants display",
+  "main": "index.js",
+  "scripts": {
+    "start": "netlify dev"
+  },
+  "dependencies": {
+    "netlify-cli": "^12.0.0"
+  },
+  "author": "",
+  "license": "MIT"
+}
