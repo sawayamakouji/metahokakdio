@@ -12,11 +12,14 @@
     <script>
         async function fetchParticipants() {
             try {
+                console.log('Fetching participants...');
                 const response = await fetch('/.netlify/functions/getParticipants');
+                console.log('Response status:', response.status);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 const participants = await response.json();
+                console.log('Participants received:', participants);
                 if (!Array.isArray(participants)) {
                     throw new Error('Participants data is not an array');
                 }
