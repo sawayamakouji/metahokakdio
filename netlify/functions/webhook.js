@@ -1,29 +1,37 @@
 const fs = require('fs');
 const filePath = '/tmp/participants.json';
+const messageFilePath = '/tmp/messages.json';
 
 function loadParticipants() {
     try {
         const data = fs.readFileSync(filePath, 'utf8');
         return JSON.parse(data);
     } catch (error) {
-        console.log("Error loading participants:", error);
         return [];
     }
 }
 
 function saveParticipants(participants) {
+    fs.writeFileSync(filePath, JSON.stringify(participants), 'utf8');
+}
+
+function loadMessages() {
     try {
-        fs.writeFileSync(filePath, JSON.stringify(participants), 'utf8');
+        const data = fs.readFileSync(messageFilePath, 'utf8');
+        return JSON.parse(data);
     } catch (error) {
-        console.error("Error saving participants:", error);
+        return [];
     }
+}
+
+function saveMessages(messages) {
+    fs.writeFileSync(messageFilePath, JSON.stringify(messages), 'utf8');
 }
 
 exports.handler = async function(event, context) {
     console.log("Received event:", event.body);
 
     if (event.httpMethod !== 'POST') {
-        console.log("Method not allowed:", event.httpMethod);
         return {
             statusCode: 405,
             body: 'Method Not Allowed',
@@ -31,24 +39,23 @@ exports.handler = async function(event, context) {
     }
 
     let participants = loadParticipants();
-
+    let messages = loadMessages();
     try {
         const eventData = JSON.parse(event.body);
         console.log("Parsed event data:", eventData);
 
-        const participant = {
-            id: eventData.id,
-            name: eventData.name
-        };
-
-        if (eventData.when === 'enter') {
-            participants.push(participant);
-        } else if (eventData.when === 'leave') {
-            participants = participants.filter(p => p.id !== eventData.id);
+        if (eventData.type === 'participant_joined') {
+            participants.push(eventData.participant);
+            messages.push(`${eventData.participant.name}さんが入室しました`);
+        } else if (eventData.type === 'participant_left') {
+            participants = participants.filter(p => p.id !== eventData.participant.id);
+            messages.push(`${eventData.participant.name}さんが退室しました`);
         }
 
         saveParticipants(participants);
+        saveMessages(messages);
         console.log("Updated participants list:", participants);
+        console.log("Updated messages list:", messages);
 
         return {
             statusCode: 200,

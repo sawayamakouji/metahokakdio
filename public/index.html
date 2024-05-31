@@ -8,6 +8,8 @@
 <body>
     <h1>Current Participants</h1>
     <ul id="participants"></ul>
+    <h2>Messages</h2>
+    <ul id="messages"></ul>
 
     <script>
         async function fetchParticipants() {
@@ -18,19 +20,29 @@
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                const participants = await response.json();
-                console.log('Participants received:', participants);
-                if (!Array.isArray(participants)) {
+                const data = await response.json();
+                console.log('Data received:', data);
+
+                if (!Array.isArray(data.participants)) {
                     throw new Error('Participants data is not an array');
                 }
 
                 const participantsList = document.getElementById('participants');
                 participantsList.innerHTML = '';
 
-                participants.forEach(participant => {
+                data.participants.forEach(participant => {
                     const listItem = document.createElement('li');
                     listItem.textContent = participant.name;
                     participantsList.appendChild(listItem);
+                });
+
+                const messagesList = document.getElementById('messages');
+                messagesList.innerHTML = '';
+
+                data.messages.forEach(message => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = message;
+                    messagesList.appendChild(listItem);
                 });
             } catch (error) {
                 console.error('Error fetching participants:', error);
