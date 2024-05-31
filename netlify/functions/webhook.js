@@ -23,6 +23,7 @@ exports.handler = async function(event, context) {
     console.log("Received event:", event.body);
 
     if (event.httpMethod !== 'POST') {
+        console.log("Method not allowed:", event.httpMethod);
         return {
             statusCode: 405,
             body: 'Method Not Allowed',
@@ -30,14 +31,20 @@ exports.handler = async function(event, context) {
     }
 
     let participants = loadParticipants();
+
     try {
         const eventData = JSON.parse(event.body);
         console.log("Parsed event data:", eventData);
 
-        if (eventData.type === 'participant_joined') {
-            participants.push(eventData.participant);
-        } else if (eventData.type === 'participant_left') {
-            participants = participants.filter(p => p.id !== eventData.participant.id);
+        const participant = {
+            id: eventData.id,
+            name: eventData.name
+        };
+
+        if (eventData.when === 'enter') {
+            participants.push(participant);
+        } else if (eventData.when === 'leave') {
+            participants = participants.filter(p => p.id !== eventData.id);
         }
 
         saveParticipants(participants);
@@ -55,5 +62,3 @@ exports.handler = async function(event, context) {
         };
     }
 };
-
-exports.participants = participants;
