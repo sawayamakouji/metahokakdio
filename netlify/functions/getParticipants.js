@@ -1,3 +1,5 @@
+const participants = require('./webhook').participants;
+
 exports.handler = async function(event, context) {
     return {
         statusCode: 200,
